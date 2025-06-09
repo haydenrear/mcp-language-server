@@ -18,3 +18,5 @@ CLAUDE.md*
 .mcp.json
 .goosehints
 **/target
+
+examples/java/workspace

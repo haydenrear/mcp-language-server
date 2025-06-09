@@ -14,6 +14,8 @@ RUN apk add --no-cache \
     cargo \
     ca-certificates
 
+RUN npm install -g pyright
+
 # Set JAVA_HOME
 ENV JAVA_HOME=/usr/lib/jvm/java-21-openjdk
 ENV PATH="$JAVA_HOME/bin:$PATH"
