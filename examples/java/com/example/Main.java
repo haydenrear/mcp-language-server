@@ -11,6 +11,8 @@ public class Main {
     private String name;
     private int count;
 
+    int count;
+
     public Main(String name) {
         this.name = name;
         this.count = 0;
@@ -45,8 +47,12 @@ public class Main {
      * @return a greeting message
      */
     public String greet() {
-        return String.format("%s Welcome, %s! Count: %d",
-                           GREETING, name, count);
+        return String.format(
+            "%s Welcome, %s! Count: %d",
+            GREETING,
+            name,
+            count
+        );
     }
 
     /**
@@ -56,9 +62,9 @@ public class Main {
      */
     public static String[] processItems(String[] items) {
         return java.util.Arrays.stream(items)
-                .map(String::toUpperCase)
-                .filter(s -> !s.isEmpty())
-                .toArray(String[]::new);
+            .map(String::toUpperCase)
+            .filter(s -> !s.isEmpty())
+            .toArray(String[]::new);
     }
 
     public static void main(String[] args) {
@@ -68,7 +74,7 @@ public class Main {
         example.incrementCount();
         System.out.println(example.greet());
 
-        String[] testItems = {"hello", "world", "", "mcp"};
+        String[] testItems = { "hello", "world", "", "mcp" };
         String[] processed = processItems(testItems);
 
         System.out.println("Processed items:");
