@@ -1,0 +1,49 @@
+version: '3.8'
+
+services:
+  mcp-language-server:
+    build: .
+    volumes:
+      - ./:/workspace
+    working_dir: /workspace
+    stdin_open: true
+    tty: true
+    environment:
+      - LOG_LEVEL=DEBUG
+    command: ["--workspace", "/workspace", "--lsp", "rust-analyzer"]
+
+  # Example service for Java development
+  mcp-java:
+    build: .
+    volumes:
+      - ./example-java-project:/workspace
+    working_dir: /workspace
+    stdin_open: true
+    tty: true
+    environment:
+      - LOG_LEVEL=DEBUG
+    command: ["--workspace", "/workspace", "--lsp", "jdtls", "--", "-data", "/tmp/jdtls-workspace"]
+
+  # Example service for Python development
+  mcp-python:
+    build: .
+    volumes:
+      - ./example-python-project:/workspace
+    working_dir: /workspace
+    stdin_open: true
+    tty: true
+    environment:
+      - LOG_LEVEL=DEBUG
+    command: ["--workspace", "/workspace", "--lsp", "pyright-langserver", "--", "--stdio"]
+
+  # Example service for Rust development
+  mcp-rust:
+    build: .
+    volumes:
+      - ./example-rust-project:/workspace
+    working_dir: /workspace
+    stdin_open: true
+    tty: true
+    environment:
+      - LOG_LEVEL=DEBUG
+    command: ["--workspace", "/workspace", "--lsp", "rust-analyzer"]

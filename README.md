@@ -15,10 +15,19 @@ This is an [MCP](https://modelcontextprotocol.io/introduction) server that runs 
 
 ## Setup
 
+### Native Installation
+
 1. **Install Go**: Follow instructions at <https://golang.org/doc/install>
 2. **Install or update this server**: `go install github.com/isaacphi/mcp-language-server@latest`
 3. **Install a language server**: _follow one of the guides below_
 4. **Configure your MCP client**: _follow one of the guides below_
+
+### Docker Installation
+
+Alternatively, you can use Docker to run the mcp-language-server with pre-installed language servers:
+
+1. **Build the Docker image**: `docker build -t mcp-language-server .`
+2. **Configure your MCP client**: _follow one of the Docker guides below_
 
 <details>
   <summary>Go (gopls)</summary>
@@ -156,6 +165,117 @@ This is an [MCP](https://modelcontextprotocol.io/introduction) server that runs 
   </div>
 </details>
 <details>
+  <summary>Java (Eclipse JDT Language Server)</summary>
+  <div>
+    <p><strong>Install Eclipse JDT Language Server</strong>: Download from <a href="https://download.eclipse.org/jdtls/milestones/">Eclipse JDT Language Server releases</a> and extract to a directory like <code>/opt/jdt-language-server</code></p>
+    <p><strong>Configure your MCP client</strong>: This will be different but similar for each client. For Claude Desktop, add the following to <code>~/Library/Application\ Support/Claude/claude_desktop_config.json</code></p>
+
+<pre>
+{
+  "mcpServers": {
+    "language-server": {
+      "command": "mcp-language-server",
+      "args": [
+        "--workspace",
+        "/Users/you/dev/yourproject/",
+        "--lsp",
+        "jdtls",
+        "--",
+        "-data",
+        "/tmp/jdtls-workspace"
+      ],
+      "env": {
+        "JAVA_HOME": "/path/to/your/java/home"
+      }
+    }
+  }
+}
+</pre>
+
+<p><strong>Docker Configuration</strong>: For Claude Desktop using Docker, add the following:</p>
+
+<pre>
+{
+  "mcpServers": {
+    "language-server": {
+      "command": "docker",
+      "args": [
+        "run",
+        "--rm",
+        "-v",
+        "/Users/you/dev/yourproject:/workspace",
+        "mcp-language-server",
+        "--workspace",
+        "/workspace",
+        "--lsp",
+        "jdtls",
+        "--",
+        "-data",
+        "/tmp/jdtls-workspace"
+      ]
+    }
+  }
+}
+</pre>
+  </div>
+</details>
+<details>
+  <summary>Python (pyright) - Docker</summary>
+  <div>
+    <p><strong>Docker Configuration</strong>: For Claude Desktop using Docker, add the following to <code>~/Library/Application\ Support/Claude/claude_desktop_config.json</code></p>
+
+<pre>
+{
+  "mcpServers": {
+    "language-server": {
+      "command": "docker",
+      "args": [
+        "run",
+        "--rm",
+        "-v",
+        "/Users/you/dev/yourproject:/workspace",
+        "mcp-language-server",
+        "--workspace",
+        "/workspace",
+        "--lsp",
+        "pyright-langserver",
+        "--",
+        "--stdio"
+      ]
+    }
+  }
+}
+</pre>
+  </div>
+</details>
+<details>
+  <summary>Rust (rust-analyzer) - Docker</summary>
+  <div>
+    <p><strong>Docker Configuration</strong>: For Claude Desktop using Docker, add the following to <code>~/Library/Application\ Support/Claude/claude_desktop_config.json</code></p>
+
+<pre>
+{
+  "mcpServers": {
+    "language-server": {
+      "command": "docker",
+      "args": [
+        "run",
+        "--rm",
+        "-v",
+        "/Users/you/dev/yourproject:/workspace",
+        "mcp-language-server",
+        "--workspace",
+        "/workspace",
+        "--lsp",
+        "rust-analyzer"
+      ]
+    }
+  }
+}
+</pre>
+  </div>
+</details>
+<details>
   <summary>Other</summary>
   <div>
     <p>I have only tested this repo with the servers above but it should be compatible with many more. Note:</p>
@@ -166,6 +286,115 @@ This is an [MCP](https://modelcontextprotocol.io/introduction) server that runs 
     </ul>
   </div>
 </details>
+
+## Docker Usage
+
+The Docker image comes pre-installed with language servers for Java (Eclipse JDT), Python (pyright), and Rust (rust-analyzer), making it easy to get started without installing dependencies locally.
+
+### Building the Docker Image
+
+```bash
+docker build -t mcp-language-server .
+```
+
+### Using with Docker Compose
+
+For development and testing, you can use the provided `docker-compose.yml`:
+
+```bash
+# Run with Rust analyzer
+docker-compose up mcp-rust
+
+# Run with Java language server
+docker-compose up mcp-java
+
+# Run with Python language server
+docker-compose up mcp-python
+```
+
+### Manual Docker Commands
+
+You can also run the container directly:
+
+```bash
+# Java project example
+docker run --rm -i \
+  -v "/path/to/your/java/project:/workspace" \
+  mcp-language-server \
+  --workspace /workspace \
+  --lsp jdtls \
+  -- -data /tmp/jdtls-workspace
+
+# Python project example  
+docker run --rm -i \
+  -v "/path/to/your/python/project:/workspace" \
+  mcp-language-server \
+  --workspace /workspace \
+  --lsp pyright-langserver \
+  -- --stdio
+
+# Rust project example
+docker run --rm -i \
+  -v "/path/to/your/rust/project:/workspace" \
+  mcp-language-server \
+  --workspace /workspace \
+  --lsp rust-analyzer
+```
+
+### Docker Configuration for MCP Clients
+
+The Docker configurations shown in the language server sections above can be used with any MCP client. The key points are:
+
+- Use `docker` as the command
+- Mount your project directory to `/workspace` in the container
+- Pass the workspace path as `/workspace` to the mcp-language-server
+- Include any additional language server arguments after `--`
+
+### Installed Language Servers
+
+The Docker image includes:
+
+- **Java**: Eclipse JDT Language Server (jdtls) with Java 21
+- **Python**: Pyright language server (pyright-langserver)  
+- **Rust**: rust-analyzer with complete Rust toolchain
+- **Go**: Can be added by installing gopls in a custom Dockerfile layer
+
+### Extending the Docker Image
+
+To add support for additional language servers like Go, create a custom Dockerfile:
+
+```dockerfile
+FROM mcp-language-server
+
+# Install Go and gopls
+RUN apk add --no-cache go
+
+# Set Go environment variables
+ENV GOPATH=/root/go
+ENV GOCACHE=/root/.cache/go-build
+ENV GOMODCACHE=/root/go/pkg/mod
+ENV PATH="$PATH:$GOPATH/bin"
+
+# Install gopls
+RUN go install golang.org/x/tools/gopls@latest
+```
+
+Build and use your custom image:
+
+```bash
+# First build the base image
+docker build -t mcp-language-server .
+
+# Then build the extended image
+docker build -f Dockerfile.golang -t mcp-language-server-golang .
+
+# Use with Go projects
+docker run --rm -i \
+  -v "/path/to/your/go/project:/workspace" \
+  mcp-language-server-golang \
+  --workspace /workspace \
+  --lsp gopls
+```
 
 ## Tools
 

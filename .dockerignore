@@ -1,0 +1,39 @@
+# Git
+.git
+.gitignore
+
+# IDE
+.idea
+.vscode
+
+# Go build artifacts
+*.exe
+*.exe~
+*.dll
+*.so
+*.dylib
+mcp-language-server
+
+# Test binary, built with `go test -c`
+*.test
+
+# Output of the go coverage tool
+*.out
+
+# Go workspace file
+go.work
+
+# Integration test outputs
+integrationtests/test-output/
+
+# Demo files
+demo.gif
+demo.cast
+
+# Documentation
+README.md
+LICENSE
+ATTRIBUTION
+
+# Build tools
+justfile
